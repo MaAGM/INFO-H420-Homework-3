@@ -1,0 +1,12 @@
+# SQLite database
+data/*.db
+*.db
+
+# Airflow local files
+airflow.db
+airflow.cfg
+webserver_config.py
+logs/
+__pycache__/
+.venv/
+.idea/
