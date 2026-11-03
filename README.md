@@ -24,9 +24,7 @@ Pour chaque nouveau pdf, on applique les modifications suivantes:
     - On met à jour le fichier .html et on envoi une notif discord
 
 dags/pipeline.py agit comme un fichier main, apache airflow regardera ce fichier pour oragniser les tâches
+model choisi: llama3.2 --> ollama run llama3.2
 
 ## TODO
-
-Deux points importants pour débuter: 
-    - Trouver un bon petit llm sur ollama qui fait le taf (voir énoncé) et pas trop lourd 2Gb max je pense
-    - Set up un google drive partagé 
+Set up un google drive partagé 
