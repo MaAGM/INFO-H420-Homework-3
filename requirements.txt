@@ -1,4 +1,5 @@
-apache-airflow==2.10.2
-pymupdf4llm
-openai
-requests
+# Installer Airflow avec le fichier de contraintes officiel (voir README), puis :
+apache-airflow>=2.9
+pymupdf4llm>=0.0.17
+openai>=1.30
+requests>=2.31
