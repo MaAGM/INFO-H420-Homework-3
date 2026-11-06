@@ -26,5 +26,9 @@ Pour chaque nouveau pdf, on applique les modifications suivantes:
 dags/pipeline.py agit comme un fichier main, apache airflow regardera ce fichier pour oragniser les tâches
 model choisi: llama3.2 --> ollama run llama3.2
 
-## TODO
-Set up un google drive partagé 
+## Si on modifie le script bash de lancement d'airflow depuis windows
+il faut le convertir via 
+```
+sudo apt install dos2unix
+dos2unix start_airflow.sh
+``` 
