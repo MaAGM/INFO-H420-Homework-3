@@ -7,14 +7,14 @@ cd "$(dirname "$(readlink -f "$0")")"
 
 # 1. Virtual environment
 if [ ! -f .venv/bin/activate ]; then
-  echo "Erreur : .venv introuvable. Crée-le d'abord (voir README)." >&2
+  echo "Erreur : .venv is missing. Create it first (see README)." >&2
   exit 1
 fi
 source .venv/bin/activate
 
 # 2. Environment variables (paths, Ollama, Discord, Airflow)
 if [ ! -f .env ]; then
-  echo "Erreur : .env introuvable. Fais : cp .env.example .env puis adapte les chemins." >&2
+  echo "Erreur : .env is missing. Do: cp .env.example .env then adapt the paths." >&2
   exit 1
 fi
 set -a
@@ -27,7 +27,7 @@ mkdir -p "$PAPERS_DIR" "$OUTPUT_DIR" "$(dirname "$DB_PATH")" "$MARKDOWN_DIR" "$A
 # 4. Verify that Ollama responds (warning only)
 OLLAMA_ROOT="${OLLAMA_BASE_URL%/v1}"
 if ! curl -sf "$OLLAMA_ROOT/api/tags" > /dev/null; then
-  echo "Attention : Ollama ne répond pas sur $OLLAMA_ROOT (lance 'ollama serve')." >&2
+  echo "Warning : Ollama is not responding on $OLLAMA_ROOT (run 'ollama serve')." >&2
 fi
 
 echo "PAPERS_DIR = $PAPERS_DIR"
