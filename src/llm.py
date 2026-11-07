@@ -3,7 +3,7 @@ import json
 from typing import Any
 from openai import OpenAI
 
-MAX_CHARS = 15000  # only the beginning of the article is kept (title, summary, intro)
+MAX_CHARS = 8000  # only the beginning of the article is kept (title, summary, intro)
 
 SYSTEM_PROMPT = (
     "You are an assistant that catalogs research articles. "
@@ -30,6 +30,7 @@ def validate_metadata(data: Any) -> dict:
     return {field: data[field] for field in REQUIRED_FIELDS}
 
 
+
 def _ask_model(client: OpenAI, model: str, text: str) -> str:
     response = client.chat.completions.create(
         model=model,
@@ -39,6 +40,7 @@ def _ask_model(client: OpenAI, model: str, text: str) -> str:
         ],
         response_format={"type": "json_object"},
         temperature=0.2,
+        max_tokens=800,
     )
     return response.choices[0].message.content or ""
 
@@ -48,7 +50,7 @@ def extract_metadata(markdown: str, base_url: str, model: str) -> dict:
 
     In case of parsing or validation failure, only one additional attempt is made.
     """
-    client = OpenAI(base_url=base_url, api_key="ollama")  # Key ignored by Ollama
+    client = OpenAI(base_url=base_url, api_key="ollama", timeout=180, max_retries=0) # Key ignored by Ollama
     last_error: Exception | None = None
     for _attempt in range(2):  # 1 try + 1 retry
         raw = _ask_model(client, model, markdown)
