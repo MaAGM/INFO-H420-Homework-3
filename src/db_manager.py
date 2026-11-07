@@ -1,4 +1,4 @@
-"""Gestion de la base SQLite locale (hors du dossier synchronisé)."""
+"""Management of the local SQLite database (outside the synchronized folder)."""
 import json
 import sqlite3
 from contextlib import closing
@@ -36,7 +36,7 @@ def get_known_filenames(db_path: str) -> set[str]:
 
 def save_paper(db_path: str, filename: str, title: str, summary: str,
                keywords: list[str], category: str) -> None:
-    """Insère ou met à jour (selon `filename`) une fiche d'article."""
+    """Insert or update (based on `filename`) an article record."""
     init_db(db_path)
     with closing(_connect(db_path)) as conn, conn:
         conn.execute(

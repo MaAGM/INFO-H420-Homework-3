@@ -3,29 +3,30 @@ import json
 from typing import Any
 from openai import OpenAI
 
-MAX_CHARS = 15000  # on ne garde que le début de l'article (titre, résumé, intro)
+MAX_CHARS = 15000  # only the beginning of the article is kept (title, summary, intro)
 
 SYSTEM_PROMPT = (
-    "Tu es un assistant qui catalogue des articles de recherche. "
-    "Réponds UNIQUEMENT avec un objet JSON valide, sans texte autour, de la forme : "
-    '{"title": "titre de l\'article", "summary": "résumé court en 2-4 phrases", '
-    '"keywords": ["mot-clé 1", "mot-clé 2"], "category": "une catégorie, ex. Data Engineering"}'
+    "You are an assistant that catalogs research articles. "
+    "Respond ONLY with a valid JSON object, without any surrounding text, in the form: "
+    '{"title": "article title", "summary": "short summary in 2-4 sentences", '
+    '"keywords": ["keyword 1", "keyword 2"], "category": "a category, e.g. Data Engineering"}'
 )
+
 
 REQUIRED_FIELDS = {"title": str, "summary": str, "keywords": list, "category": str}
 
 
 def validate_metadata(data: Any) -> dict:
-    """Vérifie la présence et le type de base des champs requis ; lève ValueError sinon."""
+    """Verify the presence and basic type of the required fields ; raise ValueError otherwise."""
     if not isinstance(data, dict):
-        raise ValueError("Le JSON doit être un objet")
+        raise ValueError("The JSON must be an object")
     for field, expected in REQUIRED_FIELDS.items():
         if field not in data:
-            raise ValueError(f"Champ manquant : {field}")
+            raise ValueError(f"Missing field : {field}")
         if not isinstance(data[field], expected):
-            raise ValueError(f"Champ '{field}' : type {expected.__name__} attendu")
+            raise ValueError(f"Field '{field}' : type {expected.__name__} expected")
     if not all(isinstance(k, str) for k in data["keywords"]):
-        raise ValueError("Tous les mots-clés doivent être des chaînes")
+        raise ValueError("All keywords must be strings")
     return {field: data[field] for field in REQUIRED_FIELDS}
 
 
@@ -34,7 +35,7 @@ def _ask_model(client: OpenAI, model: str, text: str) -> str:
         model=model,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Voici le contenu de l'article :\n\n{text[:MAX_CHARS]}"},
+            {"role": "user", "content": f"Here is the content of the article :\n\n{text[:MAX_CHARS]}"},
         ],
         response_format={"type": "json_object"},
         temperature=0.2,
@@ -43,16 +44,16 @@ def _ask_model(client: OpenAI, model: str, text: str) -> str:
 
 
 def extract_metadata(markdown: str, base_url: str, model: str) -> dict:
-    """Appelle le LLM local et renvoie un dict {title, summary, keywords, category}.
+    """Call the local LLM and return a dict {title, summary, keywords, category}.
 
-    En cas d'échec de parsing ou de validation, une seule nouvelle tentative est faite.
+    In case of parsing or validation failure, only one additional attempt is made.
     """
-    client = OpenAI(base_url=base_url, api_key="ollama")  # clé ignorée par Ollama
+    client = OpenAI(base_url=base_url, api_key="ollama")  # Key ignored by Ollama
     last_error: Exception | None = None
-    for _attempt in range(2):  # 1 essai + 1 retry
+    for _attempt in range(2):  # 1 try + 1 retry
         raw = _ask_model(client, model, markdown)
         try:
             return validate_metadata(json.loads(raw))
         except (json.JSONDecodeError, ValueError) as exc:
             last_error = exc
-    raise RuntimeError(f"Réponse LLM invalide après 2 tentatives : {last_error}")
+    raise RuntimeError(f"Invalid LLM response after 2 attempts : {last_error}")

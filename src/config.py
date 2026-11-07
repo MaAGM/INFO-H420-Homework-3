@@ -1,4 +1,4 @@
-"""Configuration centralisée, lue depuis les variables d'environnement."""
+"""Centralized configuration, read from environment variables."""
 import os
 from pathlib import Path
 

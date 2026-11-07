@@ -1,4 +1,4 @@
-"""Génération de la page HTML statique listant les articles."""
+"""GGeneration of the static HTML page listing the articles."""
 import json
 from pathlib import Path
 
@@ -25,8 +25,8 @@ TEMPLATE = """<!DOCTYPE html>
 <h1>Research Library</h1>
 <div class="meta" id="count"></div>
 <div class="controls">
-  <input id="search" type="search" placeholder="Rechercher (titre, résumé, mots-clés)...">
-  <select id="category"><option value="">Toutes les catégories</option></select>
+  <input id="search" type="search" placeholder="Search (title, summary, keywords)...">
+  <select id="category"><option value="">All categories</option></select>
 </div>
 <div id="list"></div>
 <script>
@@ -75,7 +75,7 @@ render();
 
 
 def generate_html(papers: list[dict], output_path: str) -> str:
-    """Écrit la page HTML dans `output_path` (fichier) et renvoie son chemin."""
+    """Write the HTML page to `output_path` (file) and return its path."""
     payload = json.dumps(papers, ensure_ascii=False).replace("</", "<\\/")
     html = TEMPLATE.replace("__PAPERS_JSON__", payload)
     out = Path(output_path)

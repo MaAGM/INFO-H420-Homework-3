@@ -1,9 +1,9 @@
-"""DAG Airflow : PDF de recherche -> Markdown -> LLM -> SQLite -> HTML -> Discord."""
+"""DAG Airflow : PDF of research -> Markdown -> LLM -> SQLite -> HTML -> Discord."""
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
-# Rend le package `src` importable depuis le dossier dags/
+# Make the `src` package importable from the dags/ folder
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 try:  # Airflow 3
@@ -32,7 +32,7 @@ def paper_pipeline():
 
     @task
     def find_new_pdfs() -> list[str]:
-        """Liste les PDF du dossier papers/ absents de la base."""
+        """List the PDFs in the papers/ folder that are not in the database."""
         init_db(str(config.DB_PATH))
         known = get_known_filenames(str(config.DB_PATH))
         pdfs = sorted(p for p in Path(config.PAPERS_DIR).glob("*.pdf") if p.name not in known)
@@ -59,7 +59,7 @@ def paper_pipeline():
 
     @task
     def regenerate_html(stored: list[dict]) -> str:
-        """Régénère index.html à partir de toute la base (le paramètre sert à la dépendance)."""
+        """Regenerate index.html from the entire database (the parameter is for dependency)."""
         papers = get_all_papers(str(config.DB_PATH))
         return generate_html(papers, str(Path(config.OUTPUT_DIR) / "index.html"))
 
@@ -76,7 +76,7 @@ def paper_pipeline():
     stored = store_paper.expand(record=metadata)
     html_done = regenerate_html(stored)
     notifications = send_notification.expand(record=stored)
-    html_done >> notifications  # notifier seulement une fois la page à jour
+    html_done >> notifications  # Only notify once the page is up to date
 
 
 paper_pipeline()
